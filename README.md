@@ -78,41 +78,32 @@ The demo switches are decided in code, not magic: `src/lib/auth.ts` treats `plac
 
 ---
 
-## 4. Your cloud database (Neon Postgres)
+## 4. Your cloud database (Supabase Postgres)
 
 The shop runs on **Postgres** — a cloud database, because file-based databases (SQLite) cannot
-persist on hosting platforms like Vercel. The recommended free host is **Neon**
-(https://neon.tech — free tier, no credit card). A "connection string" is just a URL that says
+persist on hosting platforms like Vercel. The recommended free host is **Supabase**
+(https://supabase.com — free tier, no credit card). A "connection string" is just a URL that says
 where the database is and how to log into it.
 
-1. Go to **https://neon.tech** and sign up (signing in with GitHub works — one click).
-2. Neon creates a starter project automatically. Open it.
-3. Find **Connection Details** (dashboard → the **Connect** / **Connection Details** button).
-   You need TWO strings:
-   - **Pooled connection** → this is `DATABASE_URL` (what the app uses at runtime)
-   - **Direct connection** → this is `DIRECT_URL` (used to create tables)
-   Make sure **Pooled connection** is toggled on when copying the first one.
-4. Open `.env` and paste them in, keeping the quotes:
-
-   ```
-   DATABASE_URL="postgres://...-pooler...neon.tech/neondb?sslmode=require"
-   DIRECT_URL="postgres://...neon.tech/neondb?sslmode=require"
-   ```
-
-5. Run:
+1. Go to **https://supabase.com** and click **Start your project** → **Continue with GitHub** (one click).
+2. Click **New project**. Name it `midori`, click **Generate a password** and **copy that password somewhere safe**, pick a region near your users, then **Create new project**. It provisions for a minute or two.
+3. On the project dashboard click the **Connect** button (top of the page). It shows ready-made connection strings. You need TWO:
+   - **Transaction pooler** (port **6543**) → this is `DATABASE_URL` (what the app uses at runtime — serverless-safe)
+   - **Direct** (port **5432**) → this is `DIRECT_URL` (used to create tables)
+4. Both strings contain a `[YOUR-PASSWORD]` placeholder — replace it with the password from step 2. If the password has special characters (`@`, `#`, `&`…), they must be percent-encoded in the URL (`@` → `%40`, `#` → `%23`) — easiest is to reset the password to letters-and-numbers only (Project Settings → Database → Reset database password).
+5. Open `.env` and paste them in, keeping the quotes. The runtime string also needs `?pgbouncer=true` added to the end if it isn't already there.
+6. Run:
 
    ```
    npm run db:setup
    ```
 
-   This creates the tables in Neon and seeds the 20 products. It ends with `Seeded 20 products.`
-6. Restart `npm run dev` and reload http://localhost:3000 — the shop now reads from Neon. You can
-   confirm in the Neon dashboard under **Tables** → `Product` should show 20 rows.
+   This creates the tables in Supabase and seeds the 20 products. It ends with `Seeded 20 products.`
+7. Restart `npm run dev` and reload http://localhost:3000 — the shop now reads from Supabase. You can confirm in the Supabase dashboard under **Table Editor** → `Product` should show 20 rows.
 
-Supabase (https://supabase.com) works as an alternative: create a project → **Connect** → copy the
-**Session pooler** string (port 5432) as `DATABASE_URL` and the **Direct** string as `DIRECT_URL` —
-if the database password contains special characters like `@` or `#`, they must be percent-encoded
-(`@` → `%40`, `#` → `%23`), or reset the password to letters-and-numbers only.
+Neon (https://neon.tech) works as an alternative: sign up → copy the **Pooled connection** string as
+`DATABASE_URL` and the **Direct connection** string as `DIRECT_URL` (both from the Connect panel;
+they already include `?sslmode=require`).
 
 ## 4c. Deploy to Vercel
 
