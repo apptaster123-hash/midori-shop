@@ -1,16 +1,17 @@
 // Midori (緑) — data model per PRD §8.
-// SQLite for local dev; portable to Postgres by flipping `provider` + DATABASE_URL (PRD §0, §14).
-// Note: SQLite has no native enums, so `paymentMethod` and `status` are String.
-//   paymentMethod: 'cod' | 'whatsapp'   (PRD §8.2)
-//   status: 'pending' by default        (PRD §8.2)
+// PostgreSQL (Neon free tier) — required for Vercel, where SQLite's file-based
+// storage cannot persist. The same DATABASE_URL serves local dev and production.
+// Note: Postgres supports enums, but `paymentMethod` and `status` stay String
+// to keep parity with the SQLite history: 'cod' | 'whatsapp', 'pending'.
 
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 // ---------------------------------------------------------------------------

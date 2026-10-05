@@ -13,10 +13,10 @@ Midori (緑 — "green" in Japanese) is the online shop of a small health-and-we
 - The full one-page shop runs locally, seeded with all 20 products.
 - **Sign in is a fake Google**: click **Sign in** in the nav and a small form pops up right on the page — type any name and any email address, press **Continue**, and you're in. No Google account, no Google project needed, no page reload.
 - **Confirmation emails are not sent** — the complete rendered email is printed in your terminal (every line prefixed `[mailgun:demo]`) instead of going to an inbox.
-- Real orders are saved to a local database file (`prisma/dev.db`, SQLite — just a file on disk, no database server).
+- Real orders and bookings are saved to your **Neon Postgres** database (section 4) — nothing is stored on anyone's machine.
 - Cart and wishlist persist in your browser (localStorage); nothing is sent to any external service.
 
-You only need the three real services — Supabase/Neon (database), Google (sign-in), Mailgun (email) — when you want to move past demo mode. Each has its own section below.
+You only need the two real services — **Neon** (the database, section 4) and optionally **Google / Mailgun** — to move past the purely-local demo. Each has its own section below.
 
 ---
 
@@ -30,13 +30,13 @@ You need [Node.js](https://nodejs.org) version **20.9 or newer** — the app run
    npm install
    ```
 
-2. Create and fill the local database:
+2. Connect the database and create the tables. First do **section 4** (two minutes — create the free Neon database and paste its two connection strings into `.env`), then run:
 
    ```
    npm run db:setup
    ```
 
-   This single command does two things in a row: `prisma db push` (creates the SQLite file `prisma/dev.db` and its tables) and the seed script (inserts the 20 products from `docs/catalogue.json`). Success ends with `Seeded 20 products.` It is safe to re-run — it refreshes the products without duplicating them.
+   This does two things in a row: `prisma db push` (creates the tables in your Neon database) and the seed script (inserts the 20 products from `docs/catalogue.json`). Success ends with `Seeded 20 products.` It is safe to re-run — it refreshes the products without duplicating them.
 
 3. Start the app:
 
@@ -52,7 +52,7 @@ You need [Node.js](https://nodejs.org) version **20.9 or newer** — the app run
 
 - **Demo sign-in, in the page** — click **Sign in** in the nav and a small form opens right there: type *any* name and *any* email (the email can't be empty; there is no password check), press **Continue**, and you're signed in without leaving the page — the nav now shows your avatar/initials; click it for **Your profile**, **Settings**, and **Sign out**. Nothing is sent to Google; the session lives in an encrypted cookie. Signing in pre-fills your name/email at checkout and unlocks **/profile**, where every order placed with your email is listed. Guests can still check out without signing in at all.
 - **Emails are logged, not sent** — after you place an order, the entire confirmation email (subject, plain-text version, HTML version) appears in the terminal running `npm run dev`, with every line prefixed `[mailgun:demo]`. No email reaches any inbox.
-- **Orders go to `prisma/dev.db`** — a real Order row with a number like `MDR-20261003-A1B2`, stored in that single file. Delete the file and re-run `npm run db:setup` for a clean slate.
+- **Orders go to your Neon database** — a real Order row with a number like `MDR-20261003-A1B2`. Reset for a clean slate from the Neon dashboard (delete the rows, then re-run `npm run db:setup`).
 - **Money is computed on the server** — prices come from the database, and delivery (GHS 25, free over GHS 200) is recalculated when the order is placed; the browser's own total is never trusted.
 
 ---
@@ -65,7 +65,7 @@ One line per variable, exactly as they appear in `.env.example`:
 
 | Variable | What it is for | While it says `placeholder` |
 |---|---|---|
-| `DATABASE_URL="file:./dev.db"` | Where the database is. This value is a local SQLite file (`prisma/dev.db`), so no database server or account is needed. | Never says placeholder — it's already real. Section 4 replaces it with a cloud database URL. |
+| `DATABASE_URL` + `DIRECT_URL` | Where the database is — two Neon Postgres connection strings (pooled + direct). Section 4 gets them for you in two minutes. | Never says placeholder — paste your real Neon strings there (section 4, step 4). |
 | `NEXTAUTH_SECRET` | A random string used to sign and encrypt the sign-in session cookie. | The shipped value (`"generate-and-paste"`) works fine locally. Replace it with a long random string before deploying — generate one with Node, which you already have: run `node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"` and paste the output. |
 | `NEXTAUTH_URL` | The app's web address, used for sign-in redirects. | Always real: keep `http://localhost:3000` locally; set your real domain when you deploy. If you run the dev server on a different port, this must match. |
 | `GOOGLE_CLIENT_ID` | The OAuth "app ID" from Google Cloud Console that lets people sign in with their Google account. | Says `placeholder` → the app swaps real Google sign-in for the "Demo sign-in" form from section 2. Section 5 activates it. |
@@ -78,45 +78,60 @@ The demo switches are decided in code, not magic: `src/lib/auth.ts` treats `plac
 
 ---
 
-## 4. Switch the database to a cloud Postgres
+## 4. Your cloud database (Neon Postgres)
 
-The app ships on SQLite (a file), which is perfect locally but not for a deployed site. Below: **Supabase** first, then **Neon** as an alternative. Both are free-tier hosted Postgres databases. A "connection string" is just a URL that says where the database is and how to log into it.
+The shop runs on **Postgres** — a cloud database, because file-based databases (SQLite) cannot
+persist on hosting platforms like Vercel. The recommended free host is **Neon**
+(https://neon.tech — free tier, no credit card). A "connection string" is just a URL that says
+where the database is and how to log into it.
 
-### 4a. Supabase
-
-1. Go to **https://supabase.com** and click **Start your project** → create an account (signing up with GitHub works).
-2. Click **New project**. Name it (e.g. `midori`), click **Generate a password** and **copy the database password somewhere safe** (you'll need it in step 4), pick a region near your users, then **Create new project**. Wait a minute or two while it provisions.
-3. On the project dashboard, click the **Connect** button at the top. A panel opens with ready-made connection strings.
-4. Copy the **Session pooler** string (port **5432**). It looks like:
+1. Go to **https://neon.tech** and sign up (signing in with GitHub works — one click).
+2. Neon creates a starter project automatically. Open it.
+3. Find **Connection Details** (dashboard → the **Connect** / **Connection Details** button).
+   You need TWO strings:
+   - **Pooled connection** → this is `DATABASE_URL` (what the app uses at runtime)
+   - **Direct connection** → this is `DIRECT_URL` (used to create tables)
+   Make sure **Pooled connection** is toggled on when copying the first one.
+4. Open `.env` and paste them in, keeping the quotes:
 
    ```
-   postgresql://postgres.<project-ref>:<password>@aws-0-<region>.pooler.supabase.com:5432/postgres
+   DATABASE_URL="postgres://...-pooler...neon.tech/neondb?sslmode=require"
+   DIRECT_URL="postgres://...neon.tech/neondb?sslmode=require"
    ```
 
-   Replace `<password>` with the database password from step 2. **If the password contains special characters** — `@`, `#`, `&`, `?`, `/`, `:` and similar — they must be percent-encoded in the URL (e.g. `@` becomes `%40`, `#` becomes `%23`), or the login will fail with an authentication error at step 7. Easiest outs: encode the special characters, or in the Supabase dashboard go to **Project Settings → Database**, click **Reset database password**, and generate one made of only letters and numbers.
-
-   *Which port should you pick?* The **session pooler (5432)** is right for an app you run yourself, like `npm run dev` — use it. The **transaction pooler (port 6543)** exists for serverless hosting platforms; if you deploy there later, use the 6543 string and append `?pgbouncer=true` to the end (Supabase's own Prisma guide specifies this — the transaction pooler doesn't support Prisma's prepared statements without the flag).
-5. Open `.env` and set `DATABASE_URL` to your edited string, keeping the quotes.
-6. Open `prisma/schema.prisma` and find the `datasource db` block. Change `provider = "sqlite"` to `provider = "postgresql"`. Leave the `tags Json` field on the Product model exactly as it is — it's intentional and works on both databases.
-7. Run:
+5. Run:
 
    ```
    npm run db:setup
    ```
 
-   This creates the same tables in Supabase and seeds the 20 products. It ends with `Seeded 20 products.`
-8. Restart `npm run dev` and reload http://localhost:3000 — the shop now reads from Supabase. You can confirm in the Supabase dashboard under **Table Editor** → the `Product` table should show 20 rows.
+   This creates the tables in Neon and seeds the 20 products. It ends with `Seeded 20 products.`
+6. Restart `npm run dev` and reload http://localhost:3000 — the shop now reads from Neon. You can
+   confirm in the Neon dashboard under **Tables** → `Product` should show 20 rows.
 
-To go back to local development: restore `provider = "sqlite"` and the `file:./dev.db` URL in `.env`, then re-run `npm run db:setup`.
+Supabase (https://supabase.com) works as an alternative: create a project → **Connect** → copy the
+**Session pooler** string (port 5432) as `DATABASE_URL` and the **Direct** string as `DIRECT_URL` —
+if the database password contains special characters like `@` or `#`, they must be percent-encoded
+(`@` → `%40`, `#` → `%23`), or reset the password to letters-and-numbers only.
 
-### 4b. Neon (alternative)
+## 4c. Deploy to Vercel
 
-1. Go to **https://neon.tech** → **Sign up** → **Create project** (name it, pick a region near your users, keep the default Postgres version).
-2. In the dashboard click **Connect** and copy a connection string. Neon strings come in two flavors, distinguished by the hostname: the **pooled** string contains `-pooler` (e.g. `ep-xxx-pooler.<region>.aws.neon.tech`), the **direct** one does not.
-3. For local development, the **direct (unpooled)** string is the simplest choice and just works. The pooled string is aimed at serverless deployments (Neon's strings already include `?sslmode=require`; if you use the pooled string with Prisma and hit "prepared statement" errors, append `&pgbouncer=true`).
-4. If the copied string shows a `<password>`-style placeholder, replace it with your database password (shown in the connect panel; resettable in the dashboard under Roles).
-5. Set `DATABASE_URL` in `.env` to that string, and flip `provider = "sqlite"` → `provider = "postgresql"` in `prisma/schema.prisma` (same as Supabase steps 5–6).
-6. Run `npm run db:setup`, restart `npm run dev`, and reload the shop.
+With the database connected, deploying is short:
+
+1. Install the Vercel CLI once: `npm i -g vercel`
+2. From the project folder run `vercel login` and authorize in your browser.
+3. Run `vercel --prod`. First run asks a few questions — accept the defaults (Link to existing
+   project? **No**; project name `midori-shop`; everything else default).
+4. Add your environment variables (the CLI asks, or set them in the Vercel dashboard →
+   Settings → Environment Variables): `DATABASE_URL`, `DIRECT_URL`, `NEXTAUTH_SECRET`
+   (generate with `node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"`),
+   and `NEXTAUTH_URL` set to your live Vercel URL (e.g. `https://midori-shop.vercel.app`).
+5. Redeploy with `vercel --prod` after adding variables, then open your URL — the shop is live,
+   reading from Neon, taking real orders and bookings.
+
+Every future update: change code → `git add -A && git commit -m "what changed" && git push` →
+run `vercel --prod` again (or connect the GitHub repo in the Vercel dashboard for automatic
+deploys on push).
 
 ---
 
@@ -212,7 +227,7 @@ The seven checks, and what each proves:
 
 ## 8. Where things live
 
-Products live in **`docs/catalogue.json`** — the single source of the 20-item catalogue; edit a price, name, or photo there, then run `npm run db:seed` to refresh the database (it upserts by product id, so re-running never duplicates rows; `docs/PHOTO-GUIDE.md` explains how to shoot your own product photos and swap them in). The database schema (tables) is defined in **`prisma/schema.prisma`** with the seed loader in **`prisma/seed.ts`** and the SQLite file at **`prisma/dev.db`**. The web pages are **`src/app/page.tsx`** (the landing page + shop), **`src/app/checkout/page.tsx`**, **`src/app/profile/page.tsx`** (your orders), and **`src/app/settings/page.tsx`** (device-local checkout preferences), backed by five API routes under **`src/app/api/`** (`products`, `seed`, `checkout`, `orders`, `auth`). Every visible component lives in **`src/components/midori/`** (nav with the account menu, hero/sections, shop grid, drawers, search overlay, quick-view, chat, sign-in dialog — all assembled by `midori-shop.tsx`), and shared logic sits in **`src/lib/`** (`store.ts` for the cart/wishlist state, `settings.ts` for device preferences, `products.ts` for types/prices/delivery math, `db.ts` for the database client, `auth.ts`/`auth-client.ts` for sign-in, `mailgun.ts`/`email-template.ts` for emails). The end-to-end gate is `scripts/smoke.mjs`, and `npm run start` serves the last production build.
+Products live in **`docs/catalogue.json`** — the single source of the 20-item catalogue; edit a price, name, or photo there, then run `npm run db:seed` to refresh the database (it upserts by product id, so re-running never duplicates rows; `docs/PHOTO-GUIDE.md` explains how to shoot your own product photos and swap them in). The database schema (tables) is defined in **`prisma/schema.prisma`** with the seed loader in **`prisma/seed.ts`** and the database connection lives in **`.env`** (Neon Postgres). The web pages are **`src/app/page.tsx`** (the landing page + shop), **`src/app/checkout/page.tsx`**, **`src/app/profile/page.tsx`** (your orders), and **`src/app/settings/page.tsx`** (device-local checkout preferences), backed by five API routes under **`src/app/api/`** (`products`, `seed`, `checkout`, `orders`, `auth`). Every visible component lives in **`src/components/midori/`** (nav with the account menu, hero/sections, shop grid, drawers, search overlay, quick-view, chat, sign-in dialog — all assembled by `midori-shop.tsx`), and shared logic sits in **`src/lib/`** (`store.ts` for the cart/wishlist state, `settings.ts` for device preferences, `products.ts` for types/prices/delivery math, `db.ts` for the database client, `auth.ts`/`auth-client.ts` for sign-in, `mailgun.ts`/`email-template.ts` for emails). The end-to-end gate is `scripts/smoke.mjs`, and `npm run start` serves the last production build.
 
 ---
 
