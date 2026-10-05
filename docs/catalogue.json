@@ -1,0 +1,274 @@
+[
+  {
+    "id": "vitc",
+    "name": "Vitamin C 1000mg",
+    "category": "vitamins",
+    "price": 45,
+    "kanji": "活",
+    "meaning": "vitality",
+    "tags": [
+      "immunity",
+      "energy"
+    ],
+    "img": "/products/vitc.jpg",
+    "blurb": "Your daily sunshine in a tablet. 1000mg to keep your defences cheerful."
+  },
+  {
+    "id": "multi",
+    "name": "Adult Multivitamin",
+    "category": "vitamins",
+    "price": 60,
+    "kanji": "全",
+    "meaning": "complete",
+    "tags": [
+      "energy",
+      "immunity"
+    ],
+    "img": "/products/multi.jpg",
+    "blurb": "One tablet, all the basics. For days when lunch is a rumour."
+  },
+  {
+    "id": "omega",
+    "name": "Omega-3 Fish Oil",
+    "category": "vitamins",
+    "price": 85,
+    "kanji": "心",
+    "meaning": "heart",
+    "tags": [
+      "heart"
+    ],
+    "img": "/products/omega.jpg",
+    "blurb": "Support for your heart, brain and joints. Small capsule, big favours."
+  },
+  {
+    "id": "iron",
+    "name": "Iron + Folic Acid",
+    "category": "vitamins",
+    "price": 40,
+    "kanji": "鉄",
+    "meaning": "iron",
+    "tags": [
+      "energy",
+      "mother"
+    ],
+    "img": "/products/iron.jpg",
+    "blurb": "Gentle iron with folic acid. Steady energy, especially on heavy days."
+  },
+  {
+    "id": "thermo",
+    "name": "Digital Thermometer",
+    "category": "devices",
+    "price": 55,
+    "kanji": "温",
+    "meaning": "temperature",
+    "tags": [
+      "family",
+      "monitoring"
+    ],
+    "img": "/products/thermo.jpg",
+    "blurb": "A reading in seconds, so you stop guessing and start knowing."
+  },
+  {
+    "id": "bp",
+    "name": "Blood Pressure Monitor",
+    "category": "devices",
+    "price": 320,
+    "kanji": "脈",
+    "meaning": "pulse",
+    "tags": [
+      "heart",
+      "monitoring"
+    ],
+    "img": "/products/bp.jpg",
+    "blurb": "Clinic-grade readings at your kitchen table. Your heart's diary."
+  },
+  {
+    "id": "gluco",
+    "name": "Glucometer Kit",
+    "category": "devices",
+    "price": 150,
+    "kanji": "糖",
+    "meaning": "sugar",
+    "tags": [
+      "monitoring"
+    ],
+    "img": "/products/gluco.jpg",
+    "blurb": "Quick sugar checks with memory for your last readings. No squinting, no guessing."
+  },
+  {
+    "id": "oxi",
+    "name": "Pulse Oximeter",
+    "category": "devices",
+    "price": 90,
+    "kanji": "息",
+    "meaning": "breath",
+    "tags": [
+      "monitoring"
+    ],
+    "img": "/products/oxi.jpg",
+    "blurb": "Clip, breathe, read. Oxygen and pulse in eight seconds flat."
+  },
+  {
+    "id": "sanit",
+    "name": "Hand Sanitizer 500ml",
+    "category": "care",
+    "price": 25,
+    "kanji": "清",
+    "meaning": "clean",
+    "tags": [
+      "family"
+    ],
+    "img": "/products/sanit.webp",
+    "blurb": "70% alcohol, aloe-softened. Clean hands without the chalky feel."
+  },
+  {
+    "id": "sun",
+    "name": "Sunscreen SPF 50",
+    "category": "care",
+    "price": 70,
+    "kanji": "陽",
+    "meaning": "sun",
+    "tags": [
+      "skin"
+    ],
+    "img": "/products/sun.webp",
+    "blurb": "SPF 50 that sinks in fast. The sunscreen you'll actually wear."
+  },
+  {
+    "id": "tooth",
+    "name": "Whitening Toothpaste",
+    "category": "care",
+    "price": 18,
+    "kanji": "歯",
+    "meaning": "tooth",
+    "tags": [
+      "family"
+    ],
+    "img": "/products/tooth.jpg",
+    "blurb": "Whitening without the sting. Your dentist will nod approvingly."
+  },
+  {
+    "id": "aloe",
+    "name": "Aloe Vera Soothing Gel",
+    "category": "care",
+    "price": 32,
+    "kanji": "潤",
+    "meaning": "moisture",
+    "tags": [
+      "skin",
+      "calm"
+    ],
+    "img": "/products/aloe.jpg",
+    "blurb": "Cooling aloe for skin that's had a long day. Sun, shaving, harmattan — it forgives all."
+  },
+  {
+    "id": "lotion",
+    "name": "Baby Lotion 200ml",
+    "category": "baby",
+    "price": 35,
+    "kanji": "愛",
+    "meaning": "love",
+    "tags": [
+      "mother",
+      "family"
+    ],
+    "img": "/products/lotion.jpg",
+    "blurb": "Mild enough for newborn skin, moisturising enough for our sun."
+  },
+  {
+    "id": "wipes",
+    "name": "Baby Wipes (40pcs)",
+    "category": "baby",
+    "price": 30,
+    "kanji": "柔",
+    "meaning": "gentle",
+    "tags": [
+      "mother",
+      "family"
+    ],
+    "img": "/products/wipes.jpg",
+    "blurb": "Fragrance-free and kind to sensitive skin. Nappy changes, picnics, mysteries."
+  },
+  {
+    "id": "ptest",
+    "name": "Pregnancy Test Kit",
+    "category": "baby",
+    "price": 15,
+    "kanji": "命",
+    "meaning": "life",
+    "tags": [
+      "mother"
+    ],
+    "img": "/products/ptest.jpg",
+    "blurb": "Clear results in minutes, in your own space and your own time."
+  },
+  {
+    "id": "shampoo",
+    "name": "Mild Baby Shampoo 750ml",
+    "category": "baby",
+    "price": 33,
+    "kanji": "泡",
+    "meaning": "foam",
+    "tags": [
+      "mother",
+      "family"
+    ],
+    "img": "/products/shampoo.jpg",
+    "blurb": "No-tears formula for bath-time negotiators. Soft hair, calm evenings."
+  },
+  {
+    "id": "faid",
+    "name": "Family First Aid Kit",
+    "category": "aid",
+    "price": 120,
+    "kanji": "急",
+    "meaning": "urgent",
+    "tags": [
+      "family",
+      "firstaid"
+    ],
+    "img": "/products/faid.jpg",
+    "blurb": "The family's quiet hero. Bandages, antiseptic, gauze — ready before you need it."
+  },
+  {
+    "id": "band",
+    "name": "Elastic Bandage",
+    "category": "aid",
+    "price": 12,
+    "kanji": "絆",
+    "meaning": "bond · bandage",
+    "tags": [
+      "firstaid"
+    ],
+    "img": "/products/band.jpg",
+    "blurb": "Soft elastic support for sprains and strains. Wraps snug, peels kind."
+  },
+  {
+    "id": "antisep",
+    "name": "Methylated Spirit 200ml",
+    "category": "aid",
+    "price": 28,
+    "kanji": "護",
+    "meaning": "protect",
+    "tags": [
+      "family",
+      "firstaid"
+    ],
+    "img": "/products/antisep.jpg",
+    "blurb": "Cleans cuts and scrapes before trouble starts. A tiny bottle of foresight."
+  },
+  {
+    "id": "mask",
+    "name": "Face Masks (50pcs)",
+    "category": "aid",
+    "price": 20,
+    "kanji": "盾",
+    "meaning": "shield",
+    "tags": [
+      "family",
+      "firstaid"
+    ],
+    "img": "/products/mask.jpg",
+    "blurb": "3-ply masks, fifty to a box. For clinic days and dusty harmattan mornings."
+  }
+]

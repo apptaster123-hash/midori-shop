@@ -1,0 +1,242 @@
+@import "tailwindcss";
+
+/* ---------------------------------------------------------------------------
+   MIDORI design system — PRD §3 (Tailwind 4, CSS-first; no tailwind.config).
+   Source of truth: the :root tokens below. Tailwind maps them via @theme so
+   utilities like bg-paper / text-ink / bg-sage / text-clay / border-line work.
+--------------------------------------------------------------------------- */
+
+:root {
+  /* §3.1 Color tokens — the only colours on the site (photos excepted). */
+  --paper: #f6f1e7; /* warm cream background */
+  --paper-soft: #fbf7ee; /* lighter cream for cards */
+  --ink: #1a1f1b; /* near-black, green undertone — primary text */
+  --ink-soft: #4a524c; /* secondary text */
+  --ink-mute: #8a8f87; /* tertiary text, captions */
+  --sage: #5b7b5a; /* primary brand green */
+  --sage-deep: #2f4a35; /* darker green — hover / nav / footer */
+  --sage-mist: #dce4d6; /* sage tint — tags, hover backgrounds */
+  --clay: #b8593e; /* single warm accent — sale badges, cart count, checkout CTA */
+  --line: #d7cdb6; /* hairline borders on cream */
+
+  /* §3.5 Motion tokens. No bouncy easings — ever. */
+  --motion-hover: 200ms; /* hover states (color, background, transform) */
+  --motion-layout: 300ms; /* drawer slide, modal in, filter change */
+  --motion-reveal: 600ms; /* scroll reveal (opacity + 12px translateY) */
+  --ease-calm: cubic-bezier(0.22, 1, 0.36, 1); /* layout easing */
+}
+
+/* Colour + font families are inlined (they reference other custom properties:
+   the :root tokens above and the next/font variables set on <body>). */
+@theme inline {
+  --color-paper: var(--paper);
+  --color-paper-soft: var(--paper-soft);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-ink-mute: var(--ink-mute);
+  --color-sage: var(--sage);
+  --color-sage-deep: var(--sage-deep);
+  --color-sage-mist: var(--sage-mist);
+  --color-clay: var(--clay);
+  --color-line: var(--line);
+
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-brand), Georgia, "Times New Roman", serif;
+  --font-japanese: var(--font-jp), "Hiragino Mincho ProN", "Yu Mincho", serif;
+}
+
+/* §3.4 Radius hierarchy + §3.2 Type scale (literal values). */
+@theme {
+  --radius-photo: 0px; /* photographs read as printed plates — always sharp */
+  --radius-card: 4px; /* cards */
+  --radius-input: 2px; /* inputs */
+  --radius-tag: 2px; /* tags / badges — small rectangles, not pills */
+  --radius-dialog: 6px; /* dialogs / drawers — subtle, not over-rounded */
+  /* Primary buttons: pill — use the built-in `rounded-full`. */
+
+  --text-h1: clamp(2.4rem, 5vw, 3.6rem); /* H1 hero — Zen Old Mincho 400 */
+  --text-h1--line-height: 1.05;
+  --text-h2: clamp(1.6rem, 3vw, 2.2rem); /* H2 section — Zen Old Mincho 400 */
+  --text-h2--line-height: 1.2;
+  --text-h3: 1rem; /* H3 card title — Inter 500 */
+  --text-h3--line-height: 1.4;
+  --text-body: 1.05rem; /* body — Inter 400 */
+  --text-body--line-height: 1.65;
+  --text-small: 0.8125rem; /* small / caption — Inter 400, color ink-mute */
+  --text-small--line-height: 1.5;
+  --text-price: 1.125rem; /* price — Inter 600 + .tabular */
+  --text-price--line-height: 1.4;
+
+  --ease-calm: cubic-bezier(0.22, 1, 0.36, 1); /* → `ease-calm` utility */
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+    font-size: var(--text-body);
+    line-height: 1.65;
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1 {
+    font-family: var(--font-brand), Georgia, serif;
+    font-size: var(--text-h1);
+    line-height: 1.05;
+    font-weight: 400; /* the mincho display face is never bold */
+  }
+
+  h2 {
+    font-family: var(--font-brand), Georgia, serif;
+    font-size: var(--text-h2);
+    line-height: 1.2;
+    font-weight: 400;
+  }
+
+  h3 {
+    font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+    font-size: var(--text-h3);
+    line-height: 1.4;
+    font-weight: 500;
+  }
+
+  /* Keyboard focus ring — clay, 2px, offset (§3 a11y). */
+  :focus-visible {
+    outline: 2px solid var(--clay);
+    outline-offset: 2px;
+  }
+}
+
+@layer utilities {
+  /* Vertical Japanese text — the tategaki label and kanji accents. */
+  .tategaki {
+    writing-mode: vertical-rl;
+    text-orientation: upright;
+    font-family: var(--font-jp), "Hiragino Mincho ProN", "Yu Mincho", serif;
+    letter-spacing: 0.16em;
+    line-height: 1;
+  }
+
+  /* Cursor-following zoom container (§5 photos). JS sets --zoom-x/--zoom-y
+     (0–100%) on mousemove; CSS pans + zooms the image on hover. */
+  .img-zoom {
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--radius-photo);
+    --zoom-x: 50%;
+    --zoom-y: 50%;
+  }
+  .img-zoom img {
+    transition:
+      transform var(--motion-layout) var(--ease-calm),
+      transform-origin var(--motion-layout) var(--ease-calm);
+    transform-origin: var(--zoom-x) var(--zoom-y);
+  }
+  .img-zoom:hover img {
+    transform: scale(1.05);
+  }
+
+  /* Scroll reveal — fade-up 12px over 600ms ease-out (§3.5).
+     Toggle .reveal-visible (IntersectionObserver) to play in. */
+  .reveal {
+    opacity: 0;
+    transform: translateY(12px);
+    transition:
+      opacity var(--motion-reveal) ease-out,
+      transform var(--motion-reveal) ease-out;
+    will-change: opacity, transform;
+  }
+  .reveal-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Paper grain — fixed feTurbulence noise at 4% opacity. Mount once as
+     <div class="paper-grain" aria-hidden="true" />; sits under overlay
+     surfaces (drawers / modals / toasts own z-50+). */
+  .paper-grain {
+    position: fixed;
+    inset: 0;
+    z-index: 40;
+    pointer-events: none;
+    opacity: 0.04;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160'%3E%3Cfilter id='grain'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23grain)'/%3E%3C/svg%3E");
+    background-size: 160px 160px;
+  }
+
+  /* Seigaiha (青海波) wave pattern at ~4% — footer only, tuned for a
+     --sage-deep footer with paper-tone waves. */
+  .seigaiha {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='40' viewBox='0 0 80 40'%3E%3Cg fill='none' stroke='%23F6F1E7' stroke-opacity='0.04' stroke-width='1'%3E%3Ccircle cx='0' cy='20' r='20'/%3E%3Ccircle cx='0' cy='20' r='14'/%3E%3Ccircle cx='0' cy='20' r='8'/%3E%3Ccircle cx='40' cy='20' r='20'/%3E%3Ccircle cx='40' cy='20' r='14'/%3E%3Ccircle cx='40' cy='20' r='8'/%3E%3Ccircle cx='80' cy='20' r='20'/%3E%3Ccircle cx='80' cy='20' r='14'/%3E%3Ccircle cx='80' cy='20' r='8'/%3E%3Ccircle cx='20' cy='0' r='20'/%3E%3Ccircle cx='20' cy='0' r='14'/%3E%3Ccircle cx='20' cy='0' r='8'/%3E%3Ccircle cx='60' cy='0' r='20'/%3E%3Ccircle cx='60' cy='0' r='14'/%3E%3Ccircle cx='60' cy='0' r='8'/%3E%3Ccircle cx='20' cy='40' r='20'/%3E%3Ccircle cx='20' cy='40' r='14'/%3E%3Ccircle cx='20' cy='40' r='8'/%3E%3Ccircle cx='60' cy='40' r='20'/%3E%3Ccircle cx='60' cy='40' r='14'/%3E%3Ccircle cx='60' cy='40' r='8'/%3E%3C/g%3E%3C/svg%3E");
+    background-repeat: repeat;
+    background-size: 80px 40px;
+  }
+
+  /* Wobbly hand-drawn underline that draws in on hover / focus / current.
+     For nav links (and any inline link that wants the wink). */
+  .underline-wobble {
+    padding-bottom: 3px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='7' viewBox='0 0 120 7' preserveAspectRatio='none'%3E%3Cpath d='M2 4.5 C 12 2.5, 22 6, 32 4.2 S 52 2.2, 62 4.4 S 82 6.2, 92 4 S 112 2.4, 118 4.4' fill='none' stroke='%235B7B5A' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: 0 100%;
+    background-size: 0% 7px;
+    transition: background-size var(--motion-layout) var(--ease-calm);
+  }
+  .underline-wobble:hover,
+  .underline-wobble:focus-visible,
+  .underline-wobble[aria-current="page"] {
+    background-size: 100% 7px;
+  }
+
+  /* Aligned numerals — prices, counts (§3.2). Pair with font-semibold. */
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+/* The one global reduced-motion rule (§3.5): kill all non-essential motion. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0ms !important;
+    scroll-behavior: auto !important;
+  }
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
+  .img-zoom:hover img {
+    transform: none;
+  }
+}
+
+/* Kanji fallback plates — three tints from the palette, picked per product
+   (see kanjiPlate() in lib/products), so a wall of fallback cards reads
+   varied and deliberate rather than stamped from one mold. */
+.kanji-plate-a {
+  background-image: linear-gradient(135deg, var(--sage-mist), var(--sage));
+}
+.kanji-plate-b {
+  background-image: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--clay) 14%, var(--paper-soft)),
+    color-mix(in srgb, var(--clay) 42%, var(--paper-soft))
+  );
+}
+.kanji-plate-c {
+  background-image: linear-gradient(
+    135deg,
+    var(--paper-soft),
+    color-mix(in srgb, var(--ink) 12%, var(--paper))
+  );
+}
