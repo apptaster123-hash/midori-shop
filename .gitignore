@@ -34,3 +34,6 @@ vercel-*.log
 
 # Android TWA project + signing keys (keep local — never commit keystores)
 apk/
+
+# hosted app binary (built via PWABuilder)
+public/downloads/Midori.apk
