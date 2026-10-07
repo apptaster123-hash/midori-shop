@@ -26,3 +26,6 @@ next-env.d.ts
 # machine-local dirs
 .mimosa/
 .zcode/
+
+.vercel
+.env*

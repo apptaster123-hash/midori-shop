@@ -1,0 +1,8 @@
+Vercel CLI 62.2.0 (Node.js 24.15.0)
+Deploying midori-shop
+Uploading [--------------------] (0.0B/5.4KB)
+Uploading [====================] (5.4KB/5.4KB)
+  Inspect         https://vercel.com/takumi-studio1/midori-shop/HgMQxY21doQgYfeE1ase3XLXmQBu
+  Production      https://midori-shop-ds97rihe7-takumi-studio1.vercel.app
+https://midori-shop-ds97rihe7-takumi-studio1.vercel.appBuilding…
+Error: fetch failed

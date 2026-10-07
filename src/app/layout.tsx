@@ -31,6 +31,16 @@ export const metadata: Metadata = {
   title: "Midori — Everyday wellness, the calm way",
   description:
     "Elizabeth David, RN keeps a calm corner of Accra stocked with vitamins, blood-pressure monitors, baby care, and first aid that fit real days — no noise, no jargon. Free delivery over GHS 200.",
+  manifest: "/manifest.webmanifest",
+  appleWebApp: {
+    capable: true,
+    title: "Midori",
+    statusBarStyle: "default",
+  },
+  icons: {
+    icon: "/icons/icon-192.png",
+    apple: "/icons/icon-192.png",
+  },
 };
 
 export default function RootLayout({
